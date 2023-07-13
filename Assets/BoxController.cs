@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BoxController : MonoBehaviour
 {
+    [SerializeField] Transform camera;
     [SerializeField] GameObject[] boxPrefabs;
     [SerializeField] RectTransform[] selectionButtons;
 
@@ -18,15 +20,29 @@ public class BoxController : MonoBehaviour
         Select(0);
     }
 
-    void OnControlBox()
+    void OnControlBox(InputValue value)
     {
-        if (selection == 3 && companionCube != null)
+        if (value.isPressed)
         {
-            held = companionCube;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit emma;
+
+            if (Physics.Raycast(ray, out emma) && emma.collider.tag == "Box")
+            {
+                held = emma.collider.gameObject.GetComponent<Rigidbody>();
+            }
+            else if (selection == 3 && companionCube != null)
+            {
+                held = companionCube;
+            }
+            else
+            {
+                held = Instantiate(boxPrefabs[selection]).GetComponent<Rigidbody>();
+                if (selection == 3) companionCube = held;
+            }
         } else
         {
-            held = Instantiate(boxPrefabs[selection]).GetComponent<Rigidbody>();
-            if (selection == 3) companionCube = held;
+            held = null;
         }
     }
 
@@ -55,7 +71,7 @@ public class BoxController : MonoBehaviour
     {
         if (held != null)
         {
-            held.MovePosition(transform.position + transform.forward * 2);
+            held.MovePosition(camera.position + camera.forward * 4);
         }
     }
 }
