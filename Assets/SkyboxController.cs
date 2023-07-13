@@ -7,6 +7,7 @@ public class SkyboxController : MonoBehaviour
 {
     [SerializeField] Material daytimeMaterial;
     [SerializeField] Material nighttimeMaterial;
+    [SerializeField] Light daylight;
 
     Skybox skybox;
 
@@ -20,11 +21,13 @@ public class SkyboxController : MonoBehaviour
 
     void OnDaytime()
     {
+        daylight.intensity = 2;
         skybox.material = daytimeMaterial;
     }
 
     void OnNighttime()
     {
+        daylight.intensity = 0;
         skybox.material = nighttimeMaterial;
     }
 
